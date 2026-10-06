@@ -1,0 +1,10 @@
+node_modules/
+.env
+dist/
+generated/
+
+.agents/
+.claude/
+.windsurf/
+
+vite-project/
