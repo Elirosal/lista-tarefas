@@ -118,7 +118,7 @@ function App() {
             onChange={(event) => setTitulo(event.target.value)}
           />
 
-          <button type="submit">Adicionar</button>
+          <button>Adicionar</button>
         </form>
 
         {carregando ? (

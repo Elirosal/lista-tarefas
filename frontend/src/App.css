@@ -4,7 +4,7 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #0d1141;
+  background-color: #e2e3eb;
   margin: 0;
   padding: 0;
 }
@@ -39,6 +39,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  min-width: 0; /* Ensures the input doesn't shrink too much */
 }
 
 .formulario button {
@@ -50,6 +51,7 @@ h1 {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
+  flex-shrink: 0; /* Prevents the button from shrinking */
 }
 
 .formulario button:hover {
