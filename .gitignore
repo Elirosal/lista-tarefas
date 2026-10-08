@@ -8,3 +8,5 @@ generated/
 .windsurf/
 
 vite-project/
+.vercel
+.env*

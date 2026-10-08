@@ -17,4 +17,13 @@ model Tarefa {
   titulo    String
   completo  Boolean  @default(false)
   criado    DateTime @default(now())
+
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id])
+}
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  tarefas  Tarefa[]
 }
