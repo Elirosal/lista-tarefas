@@ -1,109 +1,146 @@
 import "dotenv/config";
-import express from 'express';
-import cors from 'cors';
-
-
-import { PrismaClient } from '../generated/prisma/client.js';
-import { PrismaPg } from '@prisma/adapter-pg';
-
-
-
-const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL
-});
-
-const prisma = new PrismaClient({ adapter });
-
+import express from "express";
+import cors from "cors";
+import authRoutes from "./authRoutes.js";
+import { prisma } from "./lib/prisma.js";
+import { autenticar } from "./middleware/auth.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.use("/auth", authRoutes);
 
+// Todas as rotas abaixo exigem um JWT válido.
+app.use("/tarefas", autenticar);
 
-// cria rota GET / Lista de Tarefas
-app.get('/tarefas', async (req, res) => {
-  try {
-    const tarefas = await prisma.tarefa.findMany();
-    res.json(tarefas);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Ocorreu um erro no servidor!');
-  }
+// GET: listar somente as tarefas do usuário autenticado.
+app.get("/tarefas", async (req, res) => {
+    try {
+        const tarefas = await prisma.tarefa.findMany({
+            where: { userId: req.userId },
+            orderBy: { id: "desc" },
+        });
+
+        return res.json(tarefas);
+    } catch (error) {
+        console.error("Erro ao listar tarefas:", error);
+        return res.status(500).json({ erro: "Erro ao listar tarefas." });
+    }
 });
 
-// cria rota POST / Adiciona uma nova tarefa
-app.post('/tarefas', async (req, res) => {
+// POST: criar tarefa vinculada ao usuário autenticado.
+app.post("/tarefas", async (req, res) => {
     const { titulo, completo } = req.body;
 
-    if (!titulo) {
-        return res.status(400).json({ error: 'O campo "titulo" é obrigatório.' });
+    if (typeof titulo !== "string" || !titulo.trim()) {
+        return res.status(400).json({
+            erro: "O título da tarefa é obrigatório.",
+        });
     }
 
     try {
         const tarefa = await prisma.tarefa.create({
             data: {
-                titulo,
-                completo: completo || false
-            }
+                titulo: titulo.trim(),
+                completo: completo ?? false,
+                userId: req.userId,
+            },
         });
-        res.status(201).json(tarefa);
+
+        return res.status(201).json(tarefa);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao criar a tarefa no servidor!');
+        console.error("Erro ao criar tarefa:", error);
+        return res.status(500).json({ erro: "Erro ao criar tarefa." });
     }
 });
- 
-// cria rota PUT / Atualiza uma tarefa existente
-app.put('/tarefas/:id', async (req, res) => {
-    const idParam = parseInt(req.params.id);
+
+// PUT: atualizar somente uma tarefa pertencente ao usuário.
+app.put("/tarefas/:id", async (req, res) => {
+    const id = Number(req.params.id);
     const { titulo, completo } = req.body;
 
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ erro: "ID de tarefa inválido." });
+    }
+
     if (titulo === undefined && completo === undefined) {
-        return res.status(400).json({ error: 'Pelo menos um campo (titulo ou completo) deve ser fornecido para atualização.' });
+        return res.status(400).json({
+            erro: "Informe o título ou o estado da tarefa.",
+        });
+    }
+
+    const data = {};
+
+    if (titulo !== undefined) {
+        if (typeof titulo !== "string" || !titulo.trim()) {
+            return res.status(400).json({ erro: "Título inválido." });
+        }
+        data.titulo = titulo.trim();
+    }
+
+    if (completo !== undefined) {
+        if (typeof completo !== "boolean") {
+            return res.status(400).json({ erro: "Estado da tarefa inválido." });
+        }
+        data.completo = completo;
     }
 
     try {
-        const tarefaAtualizada = await prisma.tarefa.update({
-            where: { id: idParam },
-            data: {
-                titulo,
-                completo
-            }
+        const resultado = await prisma.tarefa.updateMany({
+            where: { id, userId: req.userId },
+            data,
         });
-        res.json(tarefaAtualizada);
+
+        if (resultado.count === 0) {
+            return res.status(404).json({
+                erro: "Tarefa não encontrada.",
+            });
+        }
+
+        const tarefaAtualizada = await prisma.tarefa.findFirst({
+            where: { id, userId: req.userId },
+        });
+
+        return res.json(tarefaAtualizada);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao atualizar a tarefa no servidor!');
+        console.error("Erro ao atualizar tarefa:", error);
+        return res.status(500).json({ erro: "Erro ao atualizar tarefa." });
     }
 });
-   
-    
-// cria rota DELETE / Remove uma tarefa existente
-app.delete('/tarefas/:id', async (req, res) => {
-    const { id } =req.params;
+
+// DELETE: excluir somente uma tarefa pertencente ao usuário.
+app.delete("/tarefas/:id", async (req, res) => {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ erro: "ID de tarefa inválido." });
+    }
 
     try {
-        await prisma.tarefa.delete({
-            where: { id: parseInt(id) }
+        const resultado = await prisma.tarefa.deleteMany({
+            where: { id, userId: req.userId },
         });
-        res.json({
-            message: `Tarefa com ID ${id} removida com sucesso!`
-        });
+
+        if (resultado.count === 0) {
+            return res.status(404).json({
+                erro: "Tarefa não encontrada.",
+            });
+        }
+
+        return res.json({ mensagem: "Tarefa removida com sucesso." });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao remover a tarefa no servidor!');
+        console.error("Erro ao remover tarefa:", error);
+        return res.status(500).json({ erro: "Erro ao remover tarefa." });
     }
 });
 
-// Middleware para lidar com erros
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Ocorreu um erro no servidor!');
+    console.error(err);
+    return res.status(500).json({ erro: "Erro interno do servidor." });
 });
 
-// Inicia o servidor na porta 3000
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

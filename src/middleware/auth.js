@@ -16,3 +16,4 @@ export function autenticar(req, res, next) {
     } catch (error) {
         return res.status(401).json({ erro: 'Token de autenticação inválido.' });
     }
+}
