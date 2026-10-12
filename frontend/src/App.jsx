@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { useEffect, useState } from 'react';
+import './App.css';
 
-const API_URL = "https://lista-tarefas-api.vercel.app";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function App() {
   const [usuario, setUsuario] = useState(() => {
     try {
-      return JSON.parse(sessionStorage.getItem("usuario")) || null;
+      return JSON.parse(sessionStorage.getItem('usuario')) || null;
     } catch {
       return null;
     }
   });
 
   const [token, setToken] = useState(
-    () => sessionStorage.getItem("token") || ""
+    () => sessionStorage.getItem('token') || ''
   );
 
-  const [modo, setModo] = useState("login");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [modo, setModo] = useState('login');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [tarefas, setTarefas] = useState([]);
-  const [titulo, setTitulo] = useState("");
+  const [titulo, setTitulo] = useState('');
   const [carregando, setCarregando] = useState(false);
-  const [mensagem, setMensagem] = useState("");
+  const [mensagem, setMensagem] = useState('');
 
   function encerrarSessao() {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("usuario");
-    setToken("");
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('usuario');
+    setToken('');
     setUsuario(null);
     setTarefas([]);
-    setTitulo("");
-    setSenha("");
-    setMensagem("");
+    setTitulo('');
+    setSenha('');
+    setMensagem('');
   }
 
   async function requisicaoAutenticada(caminho, opcoes = {}) {
     const resposta = await fetch(`${API_URL}${caminho}`, {
       ...opcoes,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
         ...opcoes.headers,
       },
@@ -47,7 +47,7 @@ function App() {
 
     if (resposta.status === 401) {
       encerrarSessao();
-      throw new Error("Sua sessão expirou. Entre novamente.");
+      throw new Error('Sua sessão expirou. Entre novamente.');
     }
 
     return resposta;
@@ -59,10 +59,10 @@ function App() {
     setCarregando(true);
 
     try {
-      const resposta = await requisicaoAutenticada("/tarefas");
+      const resposta = await requisicaoAutenticada('/tarefas');
 
       if (!resposta.ok) {
-        throw new Error("Não foi possível carregar as tarefas.");
+        throw new Error('Não foi possível carregar as tarefas.');
       }
 
       setTarefas(await resposta.json());
@@ -79,36 +79,36 @@ function App() {
 
   async function autenticar(event) {
     event.preventDefault();
-    setMensagem("");
+    setMensagem('');
 
-    const rota = modo === "cadastro" ? "/auth/register" : "/auth/login";
+    const rota = modo === 'cadastro' ? '/auth/register' : '/auth/login';
 
     try {
       const resposta = await fetch(`${API_URL}${rota}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: senha }),
       });
 
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(dados.erro || dados.mensagem || "Falha na autenticação.");
+        throw new Error(dados.erro || dados.mensagem || 'Falha na autenticação.');
       }
 
-      if (modo === "cadastro") {
-        setModo("login");
-        setSenha("");
-        setMensagem("Cadastro realizado! Entre com seu email e senha.");
+      if (modo === 'cadastro') {
+        setModo('login');
+        setSenha('');
+        setMensagem('Cadastro realizado! Entre com seu email e senha.');
         return;
       }
 
-      sessionStorage.setItem("token", dados.token);
-      sessionStorage.setItem("usuario", JSON.stringify(dados.usuario));
+      sessionStorage.setItem('token', dados.token);
+      sessionStorage.setItem('usuario', JSON.stringify(dados.usuario));
       setToken(dados.token);
       setUsuario(dados.usuario);
-      setSenha("");
-      setMensagem("");
+      setSenha('');
+      setMensagem('');
     } catch (error) {
       setMensagem(error.message);
     }
@@ -120,20 +120,20 @@ function App() {
     if (!titulo.trim()) return;
 
     try {
-      const resposta = await requisicaoAutenticada("/tarefas", {
-        method: "POST",
+      const resposta = await requisicaoAutenticada('/tarefas', {
+        method: 'POST',
         body: JSON.stringify({ titulo: titulo.trim(), completo: false }),
       });
 
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(dados.erro || "Erro ao criar tarefa.");
+        throw new Error(dados.erro || 'Erro ao criar tarefa.');
       }
 
       setTarefas((atuais) => [...atuais, dados]);
-      setTitulo("");
-      setMensagem("");
+      setTitulo('');
+      setMensagem('');
     } catch (error) {
       setMensagem(error.message);
     }
@@ -142,20 +142,20 @@ function App() {
   async function alternarTarefa(tarefa) {
     try {
       const resposta = await requisicaoAutenticada(`/tarefas/${tarefa.id}`, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify({ completo: !tarefa.completo }),
       });
 
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(dados.erro || "Erro ao atualizar tarefa.");
+        throw new Error(dados.erro || 'Erro ao atualizar tarefa.');
       }
 
       setTarefas((atuais) =>
-        atuais.map((item) => item.id === dados.id ? dados : item)
+        atuais.map((item) => (item.id === dados.id ? dados : item))
       );
-      setMensagem("");
+      setMensagem('');
     } catch (error) {
       setMensagem(error.message);
     }
@@ -164,17 +164,17 @@ function App() {
   async function removerTarefa(id) {
     try {
       const resposta = await requisicaoAutenticada(`/tarefas/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(dados.erro || "Erro ao excluir tarefa.");
+        throw new Error(dados.erro || 'Erro ao excluir tarefa.');
       }
 
       setTarefas((atuais) => atuais.filter((tarefa) => tarefa.id !== id));
-      setMensagem("");
+      setMensagem('');
     } catch (error) {
       setMensagem(error.message);
     }
@@ -184,7 +184,7 @@ function App() {
     return (
       <main className="container">
         <div className="lista-container">
-          <h1>{modo === "cadastro" ? "Criar conta" : "Entrar"}</h1>
+          <h1>{modo === 'cadastro' ? 'Criar conta' : 'Entrar'}</h1>
 
           <form className="formulario" onSubmit={autenticar}>
             <input
@@ -201,26 +201,26 @@ function App() {
               placeholder="Senha (mínimo 8 caracteres)"
               value={senha}
               onChange={(event) => setSenha(event.target.value)}
-              autoComplete={modo === "cadastro" ? "new-password" : "current-password"}
-              minLength={modo === "cadastro" ? 8 : undefined}
+              autoComplete={modo === 'cadastro' ? 'new-password' : 'current-password'}
+              minLength={modo === 'cadastro' ? 8 : undefined}
               required
             />
 
             <button type="submit">
-              {modo === "cadastro" ? "Cadastrar" : "Entrar"}
+              {modo === 'cadastro' ? 'Cadastrar' : 'Entrar'}
             </button>
           </form>
 
           <p>
-            {modo === "cadastro" ? "Já tem uma conta?" : "Ainda não tem conta?"}{" "}
+            {modo === 'cadastro' ? 'Já tem uma conta?' : 'Ainda não tem conta?'}{' '}
             <button
               type="button"
               onClick={() => {
-                setModo(modo === "cadastro" ? "login" : "cadastro");
-                setMensagem("");
+                setModo(modo === 'cadastro' ? 'login' : 'cadastro');
+                setMensagem('');
               }}
             >
-              {modo === "cadastro" ? "Fazer login" : "Criar conta"}
+              {modo === 'cadastro' ? 'Fazer login' : 'Criar conta'}
             </button>
           </p>
 
@@ -264,7 +264,7 @@ function App() {
                     checked={tarefa.completo}
                     onChange={() => alternarTarefa(tarefa)}
                   />
-                  <span className={tarefa.completo ? "concluida" : ""}>
+                  <span className={tarefa.completo ? 'concluida' : ''}>
                     {tarefa.titulo}
                   </span>
                 </label>
