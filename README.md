@@ -1,8 +1,3 @@
-Excelente iniciativa! Ter um bom `README.md` no seu repositório é fundamental, pois ele funciona como o "cartão de visitas" do seu projeto para outros programadores e recrutadores.
-
-Com base em tudo o que configurámos e desenvolvemos ao longo da nossa conversa, preparei um modelo de README completo para o seu projeto. Ele já inclui as tecnologias corretas (React, Vite, Node.js, Express, Prisma, PostgreSQL no Neon) e os links de produção da Vercel.
-
-Pode copiar o código abaixo e colá-lo no arquivo `README.md` na raiz do seu repositório:
 
 ```markdown
 # Lista de Tarefas ✅
