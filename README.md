@@ -116,21 +116,3 @@ O frontend estará disponível em `http://localhost:5173`.
 Desenvolvido por Eli Rosal.
 
 ```
-
-### Como adicionar ao seu GitHub:
-
-**Pelo site do GitHub:**
-1. Aceda ao seu repositório: [https://github.com/Elirosal/lista-tarefas](https://github.com/Elirosal/lista-tarefas)
-2. Se já existir um arquivo chamado `README.md`, clique nele e depois no ícone do **lápis** para editar. Se não existir, clique no botão verde **"Add a README"** na página principal do repositório.
-3. Apague o que lá estiver, cole todo o texto que enviei acima e clique no botão verde **"Commit changes..."** no canto superior direito.
-
-**Pelo VS Code:**
-1. Crie um arquivo na raiz do seu projeto chamado `README.md`.
-2. Cole o texto acima e guarde o arquivo.
-3. No terminal, execute os comandos habituais para enviar:
-   ```bash
-   git add README.md
-   git commit -m "Adiciona README com documentação do projeto"
-   git push
-
-```
