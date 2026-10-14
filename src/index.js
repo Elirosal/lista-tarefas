@@ -7,10 +7,25 @@ import { autenticar } from "./middleware/auth.js";
 
 const app = express();
 
-app.use(cors());
+// 1. O CORS deve ser a PRIMEIRA coisa configurada, antes de qualquer rota
+app.use(cors({
+  origin: [
+    'https://lista-tarefas-green-two.vercel.app', // Sua URL de produção (Frontend)
+    'http://localhost:3000', // Localhost do frontend (React/Next)
+    'http://localhost:5173'  // Localhost do frontend (Vite)
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// 2. Configuração para ler JSON
 app.use(express.json());
 
+// 3. Suas rotas vêm DEPOIS do CORS
 app.use("/auth", authRoutes);
+
+// Todas as rotas abaixo exigem um JWT válido.
+app.use("/tarefas", autenticar);
 
 // Todas as rotas abaixo exigem um JWT válido.
 app.use("/tarefas", autenticar);

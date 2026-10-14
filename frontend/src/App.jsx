@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = 'https://lista-tarefas-api.vercel.app';
+const API_URL = process.env.REACT_APP_API_URL || 'https://lista-tarefas-api.vercel.app';
 
 function App() {
   const [usuario, setUsuario] = useState(() => {
