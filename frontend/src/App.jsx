@@ -186,7 +186,7 @@ function App() {
         <div className="lista-container">
           <h1>{modo === 'cadastro' ? 'Criar conta' : 'Entrar'}</h1>
 
-          <form className="formulario" onSubmit={autenticar}>
+          <form className="formulario-login" onSubmit={autenticar}>
             <input
               type="email"
               placeholder="Seu email"
@@ -209,6 +209,9 @@ function App() {
             <button type="submit">
               {modo === 'cadastro' ? 'Cadastrar' : 'Entrar'}
             </button>
+            
+
+            
           </form>
 
           <p>
@@ -229,6 +232,8 @@ function App() {
       </main>
     );
   }
+
+  
 
   return (
     <main className="container">
@@ -284,5 +289,6 @@ function App() {
     </main>
   );
 }
+
 
 export default App;

@@ -2,114 +2,291 @@
   box-sizing: border-box;
 }
 
+:root {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #e2e3eb;
+  min-width: 320px;
+  min-height: 100vh;
   margin: 0;
-  padding: 0;
+  padding: 24px;
+  background: linear-gradient(125deg, #1b52e9 0%, #2414d8 48%, #25c7f5 100%);
+  background-attachment: fixed;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .container {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  margin: 42px auto;
 }
 
 .lista-container {
-  background: rgb(212, 213, 226);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: clamp(22px, 5vw, 48px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: 0 24px 70px rgba(25, 10, 100, 0.2);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 h1 {
-  text-align: center;
-  color: #333;
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 750;
+  letter-spacing: -1.2px;
+  text-align: left;
 }
 
 .formulario {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  margin: 28px 0;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .formulario input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  min-height: 52px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.96);
+  color: #29204d;
   font-size: 16px;
-  min-width: 0; /* Ensures the input doesn't shrink too much */
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.formulario input::placeholder {
+  color: #7770a8;
+}
+
+.formulario input:focus {
+  border-color: #d9b7ff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.17);
 }
 
 .formulario button {
-  padding: 8px 5px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 0 24px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #a020ff, #6200d9);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-  flex-shrink: 0; /* Prevents the button from shrinking */
+  box-shadow: 0 7px 20px rgba(70, 0, 170, 0.24);
+  transition: transform 0.2s, filter 0.2s;
 }
 
 .formulario button:hover {
-  background-color: #dce4ee;
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.formulario button:active {
+  transform: translateY(0);
+}
+.formulario-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.formulario-login input {
+  width: 100%;
+  min-height: 48px;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 16px;
+}
+
+.formulario-login button {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #8e2de2, #4a00e0);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .mensagem {
+  padding: 18px 10px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 15px;
   text-align: center;
-  color: #f5f3f3;
-  font-style: italic;
 }
 
 .tarefas {
-  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .tarefa {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s, transform 0.2s;
 }
 
-.tarefa:last-child {
-  border-bottom: none;
+.tarefa:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .tarefa label {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
+  min-width: 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
 .tarefa input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  flex: 0 0 19px;
+  width: 19px;
+  height: 19px;
+  margin: 0;
+  accent-color: #a020ff;
   cursor: pointer;
 }
 
 .tarefa .concluida {
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: line-through;
-  color: #999;
 }
 
 .botao-excluir {
-  padding: 5px 10px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9px;
+  background: rgba(190, 35, 90, 0.75);
+  color: #fff;
+  font-size: 13px;
   cursor: pointer;
-  font-size: 14px;
+  transition: background 0.2s;
 }
 
 .botao-excluir:hover {
-  background-color: #c82333;
+  background: #d92759;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    margin: 18px auto;
+  }
+
+  .lista-container {
+    padding: 22px 16px;
+    border-radius: 18px;
+  }
+
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.6px;
+  }
+
+  .formulario {
+    flex-direction: column;
+    gap: 10px;
+    margin: 22px 0;
+    padding: 8px;
+  }
+
+  .formulario input {
+    flex: auto;
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .formulario button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .tarefa {
+    gap: 10px;
+    padding: 14px 11px;
+  }
+
+  .tarefa label {
+    gap: 9px;
+    font-size: 14px;
+  }
+
+  .botao-excluir {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
