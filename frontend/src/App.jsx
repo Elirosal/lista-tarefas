@@ -24,6 +24,12 @@ function App() {
   const [carregando, setCarregando] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
+  const [lembretesAtivos, setLembretesAtivos] = useState(
+  () =>
+    typeof Notification !== 'undefined' &&
+    Notification.permission === 'granted'
+);
+
   function encerrarSessao() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('usuario');
@@ -73,9 +79,64 @@ function App() {
     }
   }
 
+  async function ativarLembretes() {
+  if (!('Notification' in window)) {
+    setMensagem('Seu navegador não suporta notificações.');
+    return;
+  }
+
+  const permissao = await Notification.requestPermission();
+
+  if (permissao === 'granted') {
+    setLembretesAtivos(true);
+    setMensagem('Lembretes ativados para as 20h!');
+  } else {
+    setMensagem('Permita as notificações no navegador para ativar os lembretes.');
+  }
+}
+
   useEffect(() => {
     if (token) carregarTarefas();
   }, [token]);
+
+  useEffect(() => {
+  if (!token || !usuario || !lembretesAtivos) return;
+
+  function verificarLembrete() {
+    const agora = new Date();
+    const hora = agora.getHours();
+
+    if (hora < 20) return;
+
+    const pendentes = tarefas.filter(
+      (tarefa) => !tarefa.completo
+    );
+
+    if (pendentes.length === 0) return;
+
+    const data = [
+      agora.getFullYear(),
+      String(agora.getMonth() + 1).padStart(2, '0'),
+      String(agora.getDate()).padStart(2, '0'),
+    ].join('-');
+
+    const chave = `lembrete-${usuario.email}-${data}`;
+
+    if (localStorage.getItem(chave)) return;
+
+    new Notification('Lembrete de tarefas', {
+      body: `Você tem ${pendentes.length} tarefa(s) pendente(s). Que tal concluí-las?`,
+    });
+
+    localStorage.setItem(chave, 'enviado');
+  }
+
+  verificarLembrete();
+
+  const intervalo = setInterval(verificarLembrete, 30000);
+
+  return () => clearInterval(intervalo);
+}, [token, usuario, tarefas, lembretesAtivos]);
 
   async function autenticar(event) {
     event.preventDefault();
@@ -241,6 +302,10 @@ function App() {
         <h1>Lista de Tarefas</h1>
         <p>Conectado como {usuario.email}</p>
         <button type="button" onClick={encerrarSessao}>Sair</button>
+
+        <button type="button" onClick={ativarLembretes}>
+  {lembretesAtivos ? 'Lembretes ativados' : 'Ativar lembretes'}
+</button>
 
         <form onSubmit={adicionarTarefa} className="formulario">
           <input
